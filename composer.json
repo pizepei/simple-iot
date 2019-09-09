@@ -10,7 +10,10 @@
           }
       ],
       "require": {
-          "php": ">=7.0.0"
+        "php": ">=7.0.0",
+        "pizepei/helper": "dev-master",
+        "pizepei/encryption":"dev-master",
+        "pizepei/wechat":"dev-master"
       },
       "autoload": {
           "psr-4": {
