@@ -13,7 +13,8 @@
         "php": ">=7.0.0",
         "pizepei/helper": "dev-master",
         "pizepei/encryption":"dev-master",
-        "pizepei/wechat":"dev-master"
+        "pizepei/wechat":"dev-master",
+        "alibabacloud/client": "^1.5",
       },
       "autoload": {
           "psr-4": {
