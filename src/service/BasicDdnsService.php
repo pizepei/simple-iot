@@ -130,6 +130,7 @@ class BasicDdnsService
                 }
             }
         }
+        return $res??[0];
     }
 
 }
