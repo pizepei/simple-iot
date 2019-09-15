@@ -8,6 +8,7 @@ namespace pizepei\simpleIot\service;
 use AlibabaCloud\Client\AlibabaCloud;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
+use pizepei\simpleIot\model\RaspberryPiDdnsLogModel;
 use pizepei\simpleIot\model\RaspberryPiModel;
 use pizepei\terminalInfo\TerminalInfo;
 
@@ -118,14 +119,44 @@ class BasicDdnsService
         if (empty($data['ddns_domain_name'])){
             return [0];
         }
+        # 循环树莓派配置
         foreach ($data['ddns_domain_name'] as $key=>$value){
             if (is_array($value) && !empty($value)){
+                # 当树莓派失败有ddns域名配置时
                 foreach ($value as $k=>$v){
-                    if (gethostbyname($k.'.'.$key) !== TerminalInfo::get_ip()){
+                    # 读取ddns配置日志
+                    $Log = RaspberryPiDdnsLogModel::table()->where([
+                        'pi_uuid'=>$path['uuid'],
+                        'ddns_domain_name'=>$k.'.'.$key
+                    ])->order('creation_time','desc')->fetch();
+                    # 这里不再使用gethostbyname函数判断是否需要更新域名解析：因为域名解析是有生效延迟的在解析没有生效前使用gethostbyname函数获取的ip一直是ago_ip
+                    # 这里使用设备ip+域名+order desc 查询出最新的日志来判断是否需要更新解析
+
+                    if (empty($Log)){
                         # 先删除记录
                         $res['DeleteSub'][] = $this->DeleteSubDomainRecords($key,$k);
                         # 添加记录
                         $res['Delete'][] = $this->AddDomainRecord($key,$k,TerminalInfo::get_ip());
+                        RaspberryPiDdnsLogModel::table()->add([
+                            'pi_uuid'=>$path['uuid'],
+                            'ip'=>TerminalInfo::get_ip(),
+                            'ago_ip'=>TerminalInfo::get_ip(),
+                            'ddns_domain_name'=>$k.'.'.$key
+                        ]);
+                    }else{
+                        # 有记录
+                        if ($Log['ip'] !==TerminalInfo::get_ip()){
+                            # 先删除记录
+                            $res['DeleteSub'][] = $this->DeleteSubDomainRecords($key,$k);
+                            # 添加记录
+                            $res['Delete'][] = $this->AddDomainRecord($key,$k,TerminalInfo::get_ip());
+                            RaspberryPiDdnsLogModel::table()->add([
+                                'pi_uuid'=>$path['uuid'],
+                                'ip'=>TerminalInfo::get_ip(),
+                                'ago_ip'=>gethostbyname($k.'.'.$key),
+                                'ddns_domain_name'=>$k.'.'.$key
+                            ]);
+                        }
                     }
                 }
             }
