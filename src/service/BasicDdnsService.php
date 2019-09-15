@@ -8,6 +8,8 @@ namespace pizepei\simpleIot\service;
 use AlibabaCloud\Client\AlibabaCloud;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
+use pizepei\simpleIot\model\RaspberryPiModel;
+use pizepei\terminalInfo\TerminalInfo;
 
 class BasicDdnsService
 {
@@ -82,6 +84,52 @@ class BasicDdnsService
 
     }
 
-    #  域名   记录
-    #
+    /**
+     * @param string $DomainName 域名名称。
+     * @param string $RR  主机记录  www
+     * @param string $Type 解析记录类型
+     * @param string $Value 记录值。
+     * @param int $TTL 解析生效时间，默认为600秒（10分钟）
+     * @return array
+     * @throws \Exception
+     */
+    public function AddDomainRecord(string $DomainName,string $RR,string $Value,$Type='A',int $TTL=600)
+    {
+        return $this->action('AddDomainRecord',[
+            'DomainName' =>$DomainName,
+            'RR'=>$RR,
+            'Type'=>$Type,
+            'Value'=>$Value,
+            'TTL'=>$TTL,
+        ]);
+    }
+
+    /**
+     * @param $path
+     * @return string
+     * @throws \Exception
+     */
+    public  function setRaspberryPiDdns($path)
+    {
+        $data = RaspberryPiModel::table()->where(['id'=>$path['uuid']])->fetch();
+        if (md5($path['uuid'].$data['ddns_token']. $path['time']) !== $path['signature']){
+            return ['error'=>'验证失败'];
+        }
+        if (empty($data['ddns_domain_name'])){
+            return [0];
+        }
+        foreach ($data['ddns_domain_name'] as $key=>$value){
+            if (is_array($value) && !empty($value)){
+                foreach ($value as $k=>$v){
+                    if (gethostbyname($k.'.'.$key) !== TerminalInfo::get_ip()){
+                        # 先删除记录
+                        $res['DeleteSub'][] = $this->DeleteSubDomainRecords($key,$k);
+                        # 添加记录
+                        $res['Delete'][] = $this->AddDomainRecord($key,$k,TerminalInfo::get_ip());
+                    }
+                }
+            }
+        }
+    }
+
 }

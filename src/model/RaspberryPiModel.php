@@ -21,7 +21,7 @@ class RaspberryPiModel extends Model
             'TYPE'=>'varchar(128)', 'DEFAULT'=>'', 'COMMENT'=>'设备名称',
         ],
         'group_id'=>[
-            'TYPE'=>'varchar(128)', 'DEFAULT'=>false, 'COMMENT'=>'自定义分类标签',
+            'TYPE'=>'varchar(128)', 'DEFAULT'=>Model::UUID_ZERO, 'COMMENT'=>'自定义分类标签',
         ],
         'ddns_token'=>[
             'TYPE'=>'varchar(50)', 'DEFAULT'=>false, 'COMMENT'=>'令牌密钥','EXPLAIN'=>'',
@@ -30,7 +30,7 @@ class RaspberryPiModel extends Model
             'TYPE'=>'json', 'DEFAULT'=>false, 'COMMENT'=>'ddns域名',
         ],
         'address'=>[
-            'TYPE'=>"varchar(600)", 'DEFAULT'=>'', 'COMMENT'=>'地址',
+            'TYPE'=>"varchar(600)", 'DEFAULT'=>'', 'COMMENT'=>'设备地址',
         ],
         'remark'=>[
             'TYPE'=>"varchar(500)", 'DEFAULT'=>'', 'COMMENT'=>'备注',
