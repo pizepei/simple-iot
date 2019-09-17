@@ -141,7 +141,8 @@ class BasicDdnsService
                             'pi_uuid'=>$path['uuid'],
                             'ip'=>TerminalInfo::get_ip(),
                             'ago_ip'=>TerminalInfo::get_ip(),
-                            'ddns_domain_name'=>$k.'.'.$key
+                            'ddns_domain_name'=>$k.'.'.$key,
+                            'expand'=>['res'=>$res],
                         ]);
                     }else{
                         # 有记录
@@ -153,8 +154,9 @@ class BasicDdnsService
                             RaspberryPiDdnsLogModel::table()->add([
                                 'pi_uuid'=>$path['uuid'],
                                 'ip'=>TerminalInfo::get_ip(),
-                                'ago_ip'=>gethostbyname($k.'.'.$key),
-                                'ddns_domain_name'=>$k.'.'.$key
+                                'ago_ip'=>$Log['ip'],
+                                'ddns_domain_name'=>$k.'.'.$key,
+                                'expand'=>['res'=>$res],
                             ]);
                         }
                     }

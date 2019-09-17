@@ -32,16 +32,16 @@ class BasicsDdns extends Controller
     public function test(Request $Request)
     {
 
-        RaspberryPiModel::table()->add(
-            [
-                'name'=>'第一台树莓派',
-                'ddns_token'=>'shgdjdui7324478fdskjfsdhif9657-09127387243546fgdg',
-                'ddns_domain_name'=>[
-                    'heil.top'=>['pi'=>'第一个域名','pi'=>'第一个域名'],
-                ],
-                'address'=>'在家里',
-            ]
-        );
+//        RaspberryPiModel::table()->add(
+//            [
+//                'name'=>'第一台树莓派',
+//                'ddns_token'=>'shgdjdui7324478fdskjfsdhif9657-09127387243546fgdg',
+//                'ddns_domain_name'=>[
+//                    'heil.top'=>['pi'=>'第一个域名','pi'=>'第一个域名'],
+//                ],
+//                'address'=>'在家里',
+//            ]
+//        );
 
         $DdnsService = new BasicDdnsService(\Config::SMS['Aliyun']);
         return $this->succeed($DdnsService->DescribeSubDomainRecords('oauth.heil.top'));
@@ -61,6 +61,7 @@ class BasicsDdns extends Controller
     public function raspberryPiHeartBeat(Request $Request)
     {
         $DdnsService = new BasicDdnsService(\Config::SMS['Aliyun']);
+//        file_put_contents('./test/'.date('h:i:s').'.txt',json_encode($Request->path()));
 
         return $this->succeed($DdnsService->setRaspberryPiDdns($Request->path()));
 
