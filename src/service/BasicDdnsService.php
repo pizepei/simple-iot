@@ -56,7 +56,7 @@ class BasicDdnsService
     /**
      * @Author 皮泽培
      * @Created 2019/9/11 17:57
-     * @title 取某个固定子域名的所有解析记录列表
+     * @title 请求
      * @param string $action 接口
      * @param array $query 参数
      * @throws \Exception
